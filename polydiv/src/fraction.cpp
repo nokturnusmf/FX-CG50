@@ -50,7 +50,7 @@ Fraction::Fraction(const char* str, int length) : num(0), den(0) {
 
     int* p = &num;
     for (int i = 0; str[i]; ++i) {
-        if (str[i] == (char)KEY_CHAR_DIV || str[i] == (char)KEY_CHAR_FRAC) {
+        if (str[i] == '/' || str[i] == (char)KEY_CHAR_DIV || str[i] == (char)KEY_CHAR_FRAC) {
             p = &den;
             continue;
         }

@@ -7,31 +7,6 @@
 
 using Polynomial = Vector<Fraction>;
 
-bool get_string(char* buffer, int length, int pos_x, int pos_y) {
-    int start = 0;
-    int cursor = 0;
-
-    DisplayMBString((unsigned char*)buffer, start, cursor, pos_x, pos_y);
-
-    int key;
-    while (1) {
-        GetKey(&key);
-
-        if (key == KEY_CTRL_EXE) {
-            return true;
-        } else if (key == KEY_CTRL_EXIT) {
-            return false;
-        }
-
-        if (key && key < 30000) {
-            cursor = EditMBStringChar((unsigned char*)buffer, 32, cursor, key);
-            DisplayMBString((unsigned char*)buffer, start, cursor, pos_x, pos_y);
-        } else {
-            EditMBStringCtrl((unsigned char*)buffer, 32, &start, &cursor, &key, pos_x, pos_y);
-        }
-    }
-}
-
 Polynomial divide(const Polynomial& num, const Polynomial& div) {
     Polynomial result(num.size() - div.size() + 1);
     
@@ -41,7 +16,7 @@ Polynomial divide(const Polynomial& num, const Polynomial& div) {
     }
     
     for (int i = 0; i < num.size() - div.size() + 1; ++i) {
-        Fraction mul = current[0] / div[0];
+        Fraction mul = (current[0] / div[0]).cancel();
         result.push_back(mul);
         
         for (int j = 1; j < div.size(); ++j) {
@@ -54,50 +29,51 @@ Polynomial divide(const Polynomial& num, const Polynomial& div) {
     return result;
 }
 
+void print_fraction(int x, int y, const Fraction& frac, int mode, int color) {
+    int len = PrintNumXY(x, y, frac.numerator(), mode, color);
+    if (frac.denominator() != 1) {
+        PrintXY(x + len, y, "  /", mode, color);
+        PrintNumXY(x + len + 1, y, frac.denominator(), mode, color);
+    }
+}
+
+void get_polynomial(Polynomial& poly, char c, int pos_x) {
+    for (int i = 2;; ++i) {
+        char buffer[32]; buffer[0] = c;
+        memset(buffer + 1, 0, sizeof(buffer) - 1);
+        
+        while (!get_string(buffer, 32, pos_x, 1));
+        
+        if (buffer[0] == c) {
+            return;
+        } else {
+            poly.push_back(buffer);
+            print_fraction(pos_x, i, poly[poly.size() - 1], 0, TEXT_COLOR_PURPLE);
+        }
+    }
+}
+
+void clear() {
+    char empty[25]; empty[sizeof(empty) - 1] = '\0';
+    memset(empty, ' ', sizeof(empty) - 1);
+    for (int i = 1; i < 8; ++i) {
+        PrintXY(1, i, empty, 0, TEXT_COLOR_BLACK);
+    }
+}
+
 int main() {
     int key;
     while (1) {
-        Polynomial num, div;        
-        
-        int n = 1;
-        while (1) {
-            char buffer[32] = "A";
-            while (!get_string(buffer, 32, 1, 1));
-            if (buffer[0] == 'A') {
-                break;
-            } else {
-                num.push_back(buffer);
-                char temp[16] = "               ";
-                itoa(num[num.size() - 1].numerator(), temp + 2);
-                PrintXY(1, ++n, temp, 0, TEXT_COLOR_PURPLE);
-            }
-        }
-        
-        n = 1;
-        while (1) {
-            char buffer[32] = "B";
-            while (!get_string(buffer, 32, 1, 1));
-            if (buffer[0] == 'B') {
-                break;
-            } else {
-                div.push_back(buffer);
-                char temp[16] = "               ";
-                itoa(div[div.size() - 1].numerator(), temp + 2);
-                PrintXY(5, ++n, temp, 0, TEXT_COLOR_PURPLE);
-            }
-        }
+        clear();
+        Polynomial num, div;
+        get_polynomial(num, 'A', 1);
+        get_polynomial(div, 'B', 11);
+        clear();
         
         auto res = divide(num, div);
-        char c[16] = "               ";
-        itoa(res.size(), c + 2);
-        PrintXY(9, 1, c, 0, TEXT_COLOR_PURPLE);
-        
+        PrintNumXY(1, 1, res.size(), 0, TEXT_COLOR_PURPLE);
         for (int i = 0; i < res.size(); ++i) {
-            char str[16] = "               ";
-            itoa(res[i].cancel().numerator(), str + 2);
-            PrintXY(9, i + 2, str, 0, TEXT_COLOR_BLACK);
-            itoa(res[i].cancel().numerator(), str + 2);
-            PrintXY(13, i + 2, str, 0, TEXT_COLOR_BLACK);
+            print_fraction(1, i + 2, res[i], 0, TEXT_COLOR_BLACK);
         }
         
         do {

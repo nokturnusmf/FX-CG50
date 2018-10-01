@@ -102,7 +102,7 @@ export OUTPUT	:=	$(CURDIR)/$(TARGET)
 #---------------------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir $@
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 export CYGWIN := nodosfilewarning
