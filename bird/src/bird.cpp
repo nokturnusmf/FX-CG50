@@ -1,6 +1,7 @@
 #include <fxcg/system.h>
 #include <fxcg/display.h>
 #include <fxcg/keyboard.h>
+
 #include <string.h>
 
 #include "renderer.h"
@@ -26,8 +27,8 @@ int main() {
         itoa(score, score_str + 9);
         itoa(high, high_str + 8);
 
-        PrintXY(4, 3, score_str, 0, TEXT_COLOR_BLACK);
-        PrintXY(5, 4, high_str, 0, TEXT_COLOR_BLACK);
+        PrintXY(6, 3, score_str, 0, TEXT_COLOR_BLACK);
+        PrintXY(7, 4, high_str, 0, TEXT_COLOR_BLACK);
 
         int t;
         GetKey(&t);

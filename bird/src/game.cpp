@@ -2,6 +2,7 @@
 
 #include <fxcg/system.h>
 #include <fxcg/rtc.h>
+
 #include <string.h>
 
 #include "renderer.h"

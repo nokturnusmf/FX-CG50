@@ -2,29 +2,43 @@
 
 #include <fxcg/display.h>
 
-void itoa(long num, char* str, int base) {
-    if (num < 0) {
-        *(str++) = '-';
-        num = -num;
-    } else if (num == 0) {
-        str[0] = '0';
-        return;
-    }
+#include <string.h>
 
-    const char* base_string = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    str[0] = '\0';
-    for (int i = 0; num; ++i, num /= base) {
-        for (int j = i; j >= 0; --j) {
-            str[j + 1] = str[j];
+int utoa(unsigned long val, char* str, int base) {
+    const char* digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    
+    if (val == 0) {
+        str[0] = '0';
+        str[1] = '\0';
+        return 1;
+    } else {
+        str[0] = '\0';
+        
+        int i = 0;
+        while (val) {
+            memmove(str + 1, str, ++i);
+            str[0] = digits[val % base];
+            val /= base;
         }
-        str[0] = base_string[num % base];
+        
+        return i;
     }
 }
 
-void PrintNumXY(int x, int y, int i, int mode, int color) {
-    char str[10] = { ' ', ' ' };
-    itoa(i, str + 2);
-    PrintXY(x, y, str, mode, color);
+int itoa(long val, char* str, int base) {
+    if (val < 0) {
+        str[0] = '-';
+        return 1 + utoa(-val, str + 1, base);
+    } else {
+        return utoa(val, str, base);
+    }
+}
+
+int PrintNumXY(int x, int y, long num, int mode, int color) {
+    char buffer[16] = { ' ', ' ' };
+    int length = itoa(num, buffer + 2);
+    PrintXY(x, y, buffer, mode, color);
+    return length;
 }
 
 static unsigned int rng_state;
