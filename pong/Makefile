@@ -22,7 +22,7 @@ include $(FXCGSDK)/common/prizm_rules
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	src
-DATA		:=	data  
+DATA		:=	data
 INCLUDES	:=
 
 #---------------------------------------------------------------------------------
@@ -31,8 +31,8 @@ INCLUDES	:=
 
 MKG3AFLAGS := -n basic:"Pong" -i sel:../selected.bmp -i uns:../unselected.bmp
 
-CFLAGS      = -std=c++17 -Os -Wall $(MACHDEP) $(INCLUDE)
-CXXFLAGS    = -fno-exceptions $(CFLAGS)
+CFLAGS      = -Os -Wall $(MACHDEP) $(INCLUDE)
+CXXFLAGS    = -std=c++17 -fno-exceptions $(CFLAGS)
 
 LDFLAGS	= $(MACHDEP) -T$(FXCGSDK)/common/prizm.ld -Wl,-static -Wl,-gc-sections
 
