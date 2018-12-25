@@ -1,7 +1,5 @@
 #include "renderer.h"
 
-#include "util.h"
-
 static unsigned short* vram;
 
 void init_renderer() {
@@ -13,6 +11,10 @@ void clear(unsigned short bg, int start_row, int end_row) {
     for (int i = start_row * LCD_WIDTH_PX; i < end_row * LCD_WIDTH_PX; ++i) {
         vram[i] = bg;
     }
+}
+
+static inline int max(int a, int b) {
+    return a > b ? a : b;
 }
 
 void draw_sprite(const unsigned short* sprite, int x, int y, int w, int h) {
@@ -36,4 +38,3 @@ void draw_sprite(const unsigned short* sprite, int x, int y, int w, int h) {
 void write_frame() {
     Bdisp_PutDisp_DD();
 }
-

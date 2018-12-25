@@ -13,17 +13,17 @@ export CC	:=	$(PREFIX)gcc
 export CXX	:=	$(PREFIX)g++
 export AR	:=	$(PREFIX)ar
 
-$(BUILD)/%.a: $(BUILD)
+$(BUILD)/%.a: dirs
 	rm -f $@
 	$(AR) -rc $@ $^
 
-$(BUILD)/%.o: $(SOURCES)/%.c $(BUILD)
+$(BUILD)/%.o: $(SOURCES)/%.c dirs
 	$(CC) -MMD -MP -MF $(BUILD)/$*.d $(CFLAGS) -I$(LIBFXCG_INC) -c $< -o $@
 
-$(BUILD)/%.o: $(SOURCES)/%.cpp $(BUILD)
+$(BUILD)/%.o: $(SOURCES)/%.cpp dirs
 	$(CXX) -MMD -MP -MF $(BUILD)/$*.d $(CXXFLAGS) -I$(LIBFXCG_INC) -c $< -o $@
 
-$(BUILD)/%.o: $(SOURCES)/%.S $(BUILD)
+$(BUILD)/%.o: $(SOURCES)/%.S dirs
 	$(CC) -MMD -MP -MF $(BUILD)/$*.d -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
 
 %.bin:

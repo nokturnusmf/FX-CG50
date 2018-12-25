@@ -39,9 +39,10 @@ $(TARGET).bin: $(OFILES)
 
 -include $(DEPENDS)
 
-.PHONY: clean
+.PHONY: clean dirs
 clean:
 	$(RM) -fr $(BUILD) $(TARGET).*
 
-$(BUILD):
-	mkdir $(BUILD)
+dirs:
+	mkdir -p $(BUILD)
+	cd $(SOURCES) && find . -type d -exec mkdir -p -- ../$(BUILD)/{} \;
