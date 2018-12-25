@@ -1,0 +1,47 @@
+TARGET		:= $(notdir $(CURDIR))
+BUILD		:= build
+SOURCES		:= src
+
+GCFLAGS		= -Os -Wall $(MARCHDEP) $(INCLUDE)
+GCXXFLAGS	= -std=c++17 -fno-exceptions $(CFLAGS)
+GLDFLAGS	= $(MARCHDEP) -T$(abspath ../common/prizm.ld) -Wl,-static -Wl,-gc-sections
+
+GLIBS		:= -lc -lfxcg -lgcc
+
+CFILES   := $(shell find $(SOURCES) -name "*.c")
+CPPFILES := $(shell find $(SOURCES) -name "*.cpp")
+SFILES   := $(shell find $(SOURCES) -name "*.S")
+
+ifeq ($(strip $(CPPFILES)),)
+export LD	=  $(CC)
+else
+export LD	=  $(CXX)
+endif
+
+export OFILES	:=	$(patsubst src/%.c, build/%.o, $(CFILES)) $(patsubst src/%.cpp, build/%.o, $(CPPFILES)) $(patsubst src/%.S, build/%.o, $(SFILES))
+
+export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
+					$(foreach dir,$(LIBDIRS),-I$(dir)/include)
+
+export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L../lib/$(dir))
+
+export MKG3A	:= /home/nokturnusmf/Documents/Projects/Calculator/mkg3a/src/mkg3a
+MKG3AFLAGS		:= -n basic:"$(DISPLAYNAME)" -i sel:selected.bmp -i uns:unselected.bmp
+
+%.g3a: %.bin
+	$(MKG3A) $(MKG3AFLAGS) $< $@
+
+DEPENDS := $(OFILES:.o=.d)
+
+$(TARGET).g3a: $(TARGET).bin
+
+$(TARGET).bin: $(OFILES)
+
+-include $(DEPENDS)
+
+.PHONY: clean
+clean:
+	$(RM) -fr $(BUILD) $(TARGET).*
+
+$(BUILD):
+	mkdir $(BUILD)

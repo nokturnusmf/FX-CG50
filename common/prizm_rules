@@ -1,0 +1,30 @@
+ifeq ($(strip $(FXCGSDK)),)
+$(error "FXCGSDK not set")
+endif
+
+export LIBFXCG_INC	:=	$(FXCGSDK)/include
+export LIBFXCG_LIB	:=	$(FXCGSDK)/lib
+
+MARCHDEP	:= -mb -m4a-nofpu -mhitachi -nostdlib
+
+PREFIX		:=	/home/nokturnusmf/Documents/Projects/Calculator/Compiler/bin/sh3eb-elf-
+export AS	:=	$(PREFIX)as
+export CC	:=	$(PREFIX)gcc
+export CXX	:=	$(PREFIX)g++
+export AR	:=	$(PREFIX)ar
+
+$(BUILD)/%.a: $(BUILD)
+	rm -f $@
+	$(AR) -rc $@ $^
+
+$(BUILD)/%.o: $(SOURCES)/%.c $(BUILD)
+	$(CC) -MMD -MP -MF $(BUILD)/$*.d $(CFLAGS) -I$(LIBFXCG_INC) -c $< -o $@
+
+$(BUILD)/%.o: $(SOURCES)/%.cpp $(BUILD)
+	$(CXX) -MMD -MP -MF $(BUILD)/$*.d $(CXXFLAGS) -I$(LIBFXCG_INC) -c $< -o $@
+
+$(BUILD)/%.o: $(SOURCES)/%.S $(BUILD)
+	$(CC) -MMD -MP -MF $(BUILD)/$*.d -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
+
+%.bin:
+	$(LD) $^ $(LDFLAGS) $(LIBPATHS) -L$(LIBFXCG_LIB) $(LIBS) -o $@
