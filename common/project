@@ -2,9 +2,9 @@ TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
 SOURCES		:= src
 
-GCFLAGS		= -Os -Wall $(MARCHDEP) $(INCLUDE)
-GCXXFLAGS	= -std=c++17 -fno-exceptions $(CFLAGS)
-GLDFLAGS	= $(MARCHDEP) -T$(abspath ../common/prizm.ld) -Wl,-static -Wl,-gc-sections
+GCFLAGS		= -Os -Wall -Wextra -flto $(MARCHDEP) $(INCLUDE)
+GCXXFLAGS	= -std=c++17 -fno-exceptions $(GCFLAGS)
+GLDFLAGS	= -flto $(MARCHDEP) -T$(abspath ../common/prizm.ld) -Wl,-static -Wl,-gc-sections
 
 GLIBS		:= -lc -lfxcg -lgcc
 
@@ -41,7 +41,7 @@ $(TARGET).bin: $(OFILES)
 
 .PHONY: clean dirs
 clean:
-	$(RM) -fr $(BUILD) $(TARGET).*
+	$(RM) -rf $(BUILD) $(TARGET).*
 
 dirs:
 	mkdir -p $(BUILD)
