@@ -21,28 +21,25 @@ endif
 export OFILES	:=	$(patsubst src/%.c, build/%.o, $(CFILES)) $(patsubst src/%.cpp, build/%.o, $(CPPFILES)) $(patsubst src/%.S, build/%.o, $(SFILES))
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
-					$(foreach dir,$(LIBDIRS),-I$(dir)/include)
+					$(foreach dir,$(LIBDIRS), -I$(dir)/include)
 
-export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L../lib/$(dir))
+export LIBPATHS	:=	$(foreach dir,$(LIBDIRS), -L../lib/$(dir))
 
 export MKG3A	:= ~/Documents/Projects/Calculator/mkg3a/src/mkg3a
 MKG3AFLAGS		:= -n basic:"$(DISPLAYNAME)" -i sel:selected.bmp -i uns:unselected.bmp
-
-%.g3a: %.bin
-	$(MKG3A) $(MKG3AFLAGS) $< $@
-
-DEPENDS := $(OFILES:.o=.d)
 
 $(TARGET).g3a: $(TARGET).bin
 
 $(TARGET).bin: $(OFILES)
 
+DEPENDS := $(OFILES:.o=.d)
 -include $(DEPENDS)
 
-.PHONY: clean dirs
+.PHONY: clean
+
 clean:
 	$(RM) -rf $(BUILD) $(TARGET).*
 
-dirs:
-	mkdir -p $(BUILD)
-	cd $(SOURCES) && find . -type d -exec mkdir -p -- ../$(BUILD)/{} \;
+BUILD_DIRS := $(patsubst $(SOURCES)%, $(BUILD)%, $(shell find $(SOURCES) -type d))
+$(BUILD_DIRS):
+	mkdir -p $@
