@@ -76,12 +76,10 @@ int main(int argc, char** argv) {
         std::ifstream infile(argv[i], std::ios::binary);
         if (!infile) {
             std::cerr << "Couldn't open infile " << argv[i] << '\n';
-            outfile.close();
             return 3;
         }
 
         auto img = read(infile);
-        infile.close();
 
         std::string name(argv[i]);
         auto start = name.find_last_of('/') + 1;
@@ -90,6 +88,4 @@ int main(int argc, char** argv) {
 
         delete[] img.pixels;
     }
-
-    outfile.close();
 }
