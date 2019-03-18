@@ -2,21 +2,15 @@ TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
 SOURCES		:= src
 
-GCFLAGS		= -Os -Wall -Wextra -flto $(MARCHDEP) $(INCLUDE)
-GCXXFLAGS	= -std=c++17 -fno-exceptions $(GCFLAGS)
-GLDFLAGS	= -flto $(MARCHDEP) -T$(abspath ../common/prizm.ld) -Wl,-static -Wl,-gc-sections
+GCFLAGS		:= -Os -Wall -Wextra -flto $(INCLUDE)
+GCXXFLAGS	:= -std=c++17 -fno-exceptions $(GCFLAGS)
+GLDFLAGS	:= -flto -T$(abspath ../common/prizm.ld) -Wl,-static -Wl,-gc-sections
 
 GLIBS		:= -lc -lfxcg -lgcc
 
 CFILES   := $(shell find $(SOURCES) -name "*.c")
 CPPFILES := $(shell find $(SOURCES) -name "*.cpp")
 SFILES   := $(shell find $(SOURCES) -name "*.S")
-
-ifeq ($(strip $(CPPFILES)),)
-export LD	=  $(CC)
-else
-export LD	=  $(CXX)
-endif
 
 export OFILES	:=	$(patsubst src/%.c, build/%.o, $(CFILES)) $(patsubst src/%.cpp, build/%.o, $(CPPFILES)) $(patsubst src/%.S, build/%.o, $(SFILES))
 
@@ -39,7 +33,3 @@ DEPENDS := $(OFILES:.o=.d)
 
 clean:
 	$(RM) -rf $(BUILD) $(TARGET).*
-
-BUILD_DIRS := $(patsubst $(SOURCES)%, $(BUILD)%, $(shell find $(SOURCES) -type d))
-$(BUILD_DIRS):
-	mkdir -p $@
