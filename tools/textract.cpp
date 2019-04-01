@@ -81,7 +81,7 @@ void extract(std::ifstream& input, size_t offset, const char* filename) {
 
 int main(int argc, char** argv) {
     if (argc < 4) {
-        std::cerr << "Usage: " << argv[0] << " <input> <selected name> <unselected name>\n";
+        std::cerr << "Usage: " << argv[0] << " <input> <unselected name> <selected name>\n";
         return 1;
     }
 
