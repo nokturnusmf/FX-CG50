@@ -36,11 +36,12 @@ void quit_handler() {
 }
 
 int main() {
-    int len;
-    MCS_CreateDirectory(UC_LIT("BIRD"));
-    MCSGetDlen2(UC_LIT("BIRD"), UC_LIT("SCORE"), &len);
-    MCSGetData1(0, 4, &high);
-
+    if (MCS_CreateDirectory(UC_LIT("2048")) == 0x42) {
+        int len;
+        MCSGetDlen2(UC_LIT("BIRD"), UC_LIT("SCORE"), &len);
+        MCSGetData1(0, 4, &high);
+    }
+    
     SetQuitHandler(quit_handler);
 
     EnableStatusArea(3);
