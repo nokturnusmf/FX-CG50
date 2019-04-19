@@ -60,6 +60,59 @@ void draw_animations(Animation* animations, int count, int iter) {
     }
 }
 
+void draw(const State& state) {
+    draw_board();
+    draw_tiles(state.board);
+    draw_scores(state.score, state.high);
+
+    write_frame();
+}
+
+bool finished(const State& state) {
+    for (auto c : state.board) {
+        if (c == 0) {
+            return false;
+        }
+    }
+
+    for (int i = 0; i < 4; ++i) {
+        int a = 0, b = 0;
+        for (int j = 0; j < 4; ++j) {
+            if (state.board[4 * i + j]) {
+                if (state.board[4 * i + j] == a) {
+                    return false;
+                } else {
+                    a = state.board[4 * i + j];
+                }
+            }
+
+            if (state.board[4 * j + i]) {
+                if (state.board[4 * j + i] == b) {
+                    return false;
+                } else {
+                    b = state.board[4 * j + i];
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+void reset(State& state) {
+    draw(state);
+
+    PrintXY(16, 1, "  Final", 0, 0);
+    int t;
+    GetKey(&t);
+    PrintXY(16, 1, "       ", 0, 0);
+
+    state.score = 0;
+    PrintXY(12, 3, "            ", 0, 0);
+    memset(state.board, 0, sizeof(state.board));
+    state.board[rng_next() % 16] = rng_next() % 4 ? 1 : 2;
+}
+
 void update(State& state, int key) {
     Animation animations[16];
     int a = 0;
@@ -68,6 +121,10 @@ void update(State& state, int key) {
     bool last_merged = false;
     bool moved = false;
     switch (key) {
+    case KEY_CTRL_EXIT:
+        reset(state);
+        return;
+
     case KEY_CTRL_UP:
         for (int i = 0; i < 4; ++i) {
             for (int j = 0, n = 0; j < 4; ++j) {
@@ -255,58 +312,6 @@ void update(State& state, int key) {
     if (state.score > state.high) {
         state.high = state.score;
     }
-}
-
-void draw(const State& state) {
-    draw_board();
-    draw_tiles(state.board);
-    draw_scores(state.score, state.high);
-
-    write_frame();
-}
-
-bool finished(const State& state) {
-    for (auto c : state.board) {
-        if (c == 0) {
-            return false;
-        }
-    }
-
-    for (int i = 0; i < 4; ++i) {
-        int a = 0, b = 0;
-        for (int j = 0; j < 3; ++j) {
-            if (state.board[4 * i + j]) {
-                if (state.board[4 * i + j] == a) {
-                    return false;
-                } else {
-                    a = state.board[4 * i + j];
-                }
-            }
-
-            if (state.board[4 * j + i]) {
-                if (state.board[4 * j + i] == b) {
-                    return false;
-                } else {
-                    b = state.board[4 * j + i];
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-void reset(State& state) {
-    draw(state);
-
-    PrintXY(16, 1, "  Final", 0, 0);
-    int t;
-    GetKey(&t);
-    PrintXY(16, 1, "       ", 0, 0);
-
-    state.score = 0;
-    memset(state.board, 0, sizeof(state.board));
-    state.board[rng_next() % 16] = rng_next() % 4 ? 1 : 2;
 }
 
 void game(State& state) {
