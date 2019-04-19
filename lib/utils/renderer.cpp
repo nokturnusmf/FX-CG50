@@ -13,6 +13,10 @@ void clear(unsigned short bg, int start_row, int end_row) {
     }
 }
 
+void put_pixel(unsigned short pixel, int x, int y) {
+    vram[y * LCD_WIDTH_PX + x] = pixel;
+}
+
 static inline int max(int a, int b) {
     return a > b ? a : b;
 }
