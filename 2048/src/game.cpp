@@ -11,7 +11,7 @@
 #include "img.h"
 
 struct Animation {
-    unsigned short* sprite;
+    const unsigned short* sprite;
     int w, h;
     int start_x, start_y;
     int dx, dy;
@@ -61,7 +61,8 @@ void draw_animations(Animation* animations, int count, int iter) {
 }
 
 void update(State& state, int key) {
-    Animation animations[12];
+    Animation animations[16];
+    int a = 0;
     memset(animations, 0, sizeof(animations));
 
     bool last_merged = false;
@@ -75,15 +76,33 @@ void update(State& state, int key) {
                 }
 
                 if (n && !last_merged && state.board[4 * j + i] == state.board[4 * (n - 1) + i]) {
+                    animations[a++] = Animation{
+                        tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                        48 * i + 11, 48 * j + 19,
+                        0, 48 * (n - 1 - j) / 6,
+                    };
+
                     state.score += 1 << ++state.board[4 * (n - 1) + i];
                     state.board[4 * j + i] = 0;
                     last_merged = true;
                     moved = true;
                 } else {
                     if (j != n) {
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            0, 48 * (n - j) / 6,
+                        };
+
                         state.board[4 * n + i] = state.board[4 * j + i];
                         state.board[4 * j + i] = 0;
                         moved = true;
+                    } else {
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            0, 0,
+                        };
                     }
                     ++n;
                     last_merged = false;
@@ -100,15 +119,33 @@ void update(State& state, int key) {
                 }
 
                 if (n < 3 && !last_merged && state.board[4 * j + i] == state.board[4 * (n + 1) + i]) {
+                    animations[a++] = Animation{
+                        tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                        48 * i + 11, 48 * j + 19,
+                        0, 48 * (n + 1 - j) / 6,
+                    };
+
                     state.score += 1 << ++state.board[4 * (n + 1) + i];
                     state.board[4 * j + i] = 0;
                     last_merged = true;
                     moved = true;
                 } else {
                     if (j != n) {
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            0, 48 * (n - j) / 6,
+                        };
+
                         state.board[4 * n + i] = state.board[4 * j + i];
                         state.board[4 * j + i] = 0;
                         moved = true;
+                    } else {
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            0, 0,
+                        };
                     }
                     --n;
                     last_merged = false;
@@ -117,61 +154,97 @@ void update(State& state, int key) {
         }
         break;
 
-        case KEY_CTRL_LEFT:
-            for (int j = 0; j < 4; ++j) {
-                for (int i = 0, n = 0; i < 4; ++i) {
-                    if (!state.board[4 * j + i]) {
-                        continue;
-                    }
+    case KEY_CTRL_LEFT:
+        for (int j = 0; j < 4; ++j) {
+            for (int i = 0, n = 0; i < 4; ++i) {
+                if (!state.board[4 * j + i]) {
+                    continue;
+                }
 
-                    if (n && !last_merged && state.board[4 * j + i] == state.board[4 * j + n - 1]) {
-                        state.score += 1 << ++state.board[4 * j + n - 1];
+                if (n && !last_merged && state.board[4 * j + i] == state.board[4 * j + n - 1]) {
+                    animations[a++] = Animation{
+                        tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                        48 * i + 11, 48 * j + 19,
+                        48 * (n - 1 - i) / 6, 0,
+                    };
+
+                    state.score += 1 << ++state.board[4 * j + n - 1];
+                    state.board[4 * j + i] = 0;
+                    last_merged = true;
+                    moved = true;
+                } else {
+                    if (i != n) {
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            48 * (n - i) / 6, 0,
+                        };
+
+                        state.board[4 * j + n] = state.board[4 * j + i];
                         state.board[4 * j + i] = 0;
-                        last_merged = true;
                         moved = true;
                     } else {
-                        if (i != n) {
-                            state.board[4 * j + n] = state.board[4 * j + i];
-                            state.board[4 * j + i] = 0;
-                            moved = true;
-                        }
-                        ++n;
-                        last_merged = false;
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            0, 0,
+                        };
                     }
+                    ++n;
+                    last_merged = false;
                 }
             }
-            break;
+        }
+        break;
 
-        case KEY_CTRL_RIGHT:
-            for (int j = 0; j < 4; ++j) {
-                for (int i = 3, n = 3; i >= 0; --i) {
-                    if (!state.board[4 * j + i]) {
-                        continue;
-                    }
+    case KEY_CTRL_RIGHT:
+        for (int j = 0; j < 4; ++j) {
+            for (int i = 3, n = 3; i >= 0; --i) {
+                if (!state.board[4 * j + i]) {
+                    continue;
+                }
 
-                    if (n < 3 && !last_merged && state.board[4 * j + i] == state.board[4 * j + n + 1]) {
-                        state.score += 1 << ++state.board[4 * j + n + 1];
+                if (n < 3 && !last_merged && state.board[4 * j + i] == state.board[4 * j + n + 1]) {
+                    animations[a++] = Animation{
+                        tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                        48 * i + 11, 48 * j + 19,
+                        48 * (n + 1 - i) / 6, 0,
+                    };
+
+                    state.score += 1 << ++state.board[4 * j + n + 1];
+                    state.board[4 * j + i] = 0;
+                    last_merged = true;
+                    moved = true;
+                } else {
+                    if (i != n) {
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            48 * (n - i) / 6, 0,
+                        };
+
+                        state.board[4 * j + n] = state.board[4 * j + i];
                         state.board[4 * j + i] = 0;
-                        last_merged = true;
                         moved = true;
                     } else {
-                        if (i != n) {
-                            state.board[4 * j + n] = state.board[4 * j + i];
-                            state.board[4 * j + i] = 0;
-                            moved = true;
-                        }
-                        --n;
-                        last_merged = false;
+                        animations[a++] = Animation{
+                            tile_icons[state.board[4 * j + i] - 1], 42, 42,
+                            48 * i + 11, 48 * j + 19,
+                            0, 0,
+                        };
                     }
+                    --n;
+                    last_merged = false;
                 }
             }
-            break;
+        }
+        break;
 
-        default:
-            return;
+    default:
+        return;
     }
 
-    // draw_animations(animations, 12, 6);
+    draw_animations(animations, 16, 6);
 
     if (moved) {
         int i;
@@ -224,6 +297,8 @@ bool finished(const State& state) {
 }
 
 void reset(State& state) {
+    draw(state);
+
     PrintXY(16, 1, "  Final", 0, 0);
     int t;
     GetKey(&t);
