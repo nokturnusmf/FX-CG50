@@ -5,7 +5,7 @@ export LIBFXCG_LIB	:=	$(FXCGSDK)/lib
 
 MARCHDEP	:= -mb -m4a-nofpu -mhitachi -nostdlib
 
-PREFIX		:=	~/Documents/Projects/Calculator/Compiler/bin/sh3eb-elf-
+PREFIX		:=	$(FXCGSDK)/compiler/bin/sh3eb-elf-
 export AS	:=	$(PREFIX)as
 export CC	:=	$(PREFIX)gcc
 export CXX	:=	$(PREFIX)g++
