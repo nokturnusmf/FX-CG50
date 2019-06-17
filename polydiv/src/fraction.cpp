@@ -8,20 +8,20 @@ static int gcd(int a, int b) {
         if (a == 1 || b == 1) {
             return 1;
         }
-        
+
         if (a > b) {
             a -= b;
         } else {
             b -= a;
         }
     }
-    
+
     return a;
 }
 
 static int lcm(int a, int b) {
     int big, small, inc;
-    
+
     if (a > b) {
         big = a;
         small = b;
@@ -29,13 +29,13 @@ static int lcm(int a, int b) {
         big = b;
         small = a;
     }
-    
+
     inc = big;
-    
+
     while (big % small != 0) {
         big += inc;
     }
-    
+
     return big;
 }
 
@@ -44,7 +44,7 @@ Fraction::Fraction(int num, int den) : num(num), den(den) {
     this->cancel();
 }
 
-Fraction::Fraction(const char* str, int length) : num(0), den(0) {
+Fraction::Fraction(const char* str) : num(0), den(0) {
     bool negative = str[0] == (char)KEY_CHAR_MINUS;
     str += negative;
 
@@ -54,7 +54,7 @@ Fraction::Fraction(const char* str, int length) : num(0), den(0) {
             p = &den;
             continue;
         }
-    
+
         *p *= 10;
         *p += str[i] - '0';
     }
@@ -65,7 +65,7 @@ Fraction::Fraction(const char* str, int length) : num(0), den(0) {
 
     if (!den) {
         den = 1;
-    } else {    
+    } else {
         this->cancel();
     }
 }
@@ -74,7 +74,7 @@ Fraction& Fraction::cancel() {
     int div = gcd(abs(num), abs(den));
     num /= div;
     den /= div;
-    
+
     return *this;
 }
 
@@ -82,7 +82,7 @@ Fraction& Fraction::operator+=(const Fraction& other) {
     int den_new = lcm(abs(den), abs(other.den));
     this->num = this->num * (den_new / this->den) + other.num * (den_new / other.den);
     this->den = den_new;
-    
+
     return this->normalize();
 }
 
@@ -95,14 +95,14 @@ Fraction& Fraction::operator-=(const Fraction& other) {
 Fraction& Fraction::operator*=(const Fraction& other) {
     this->num *= other.num;
     this->den *= other.den;
-    
+
     return this->normalize();
 }
 
 Fraction& Fraction::operator/=(const Fraction& other) {
     this->num *= other.den;
     this->den *= other.num;
-    
+
     return this->normalize();
 }
 
@@ -111,7 +111,6 @@ Fraction& Fraction::normalize() {
         num = -num;
         den = -den;
     }
-    
+
     return *this;
 }
-

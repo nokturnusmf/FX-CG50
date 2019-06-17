@@ -17,7 +17,7 @@ bool key_update() {
             flag = true;
         }
     }
-    
+
     return flag;
 }
 

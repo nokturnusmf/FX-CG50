@@ -9,7 +9,7 @@ Vector<T>::Vector(int length) : allocated(length), used(0) {
 template<typename T>
 Vector<T>::Vector(const T& ref, int count) : Vector(count) {
     this->used = count;
-    
+
     for (int i = 0; i < count; ++i) {
         data[i] = ref;
     }
@@ -34,7 +34,7 @@ Vector<T>& Vector<T>::operator=(const Vector<T>& other) {
 
     this->used = other.used;
     this->allocated = other.allocated;
-    
+
     return *this;
 }
 
@@ -43,15 +43,15 @@ Vector<T>& Vector<T>::operator=(Vector<T>&& other) {
     if (this->data) {
         free(data);
     }
-    
+
     this->data = other.data;
     this->used = other.used;
     this->allocated = other.allocated;
-    
+
     other.data = static_cast<T*>(malloc(DEFAULT_SIZE * sizeof(T)));
     other.used = 0;
     other.allocated = DEFAULT_SIZE;
-    
+
     return *this;
 }
 
@@ -89,4 +89,3 @@ void Vector<T>::realloc(int length) {
     free(data);
     data = t;
 }
-

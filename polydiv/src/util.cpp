@@ -7,21 +7,21 @@
 
 int utoa(unsigned long val, char* str, int base) {
     const char* digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    
+
     if (val == 0) {
         str[0] = '0';
         str[1] = '\0';
         return 1;
     } else {
         str[0] = '\0';
-        
+
         int i = 0;
         while (val) {
             memmove(str + 1, str, ++i);
             str[0] = digits[val % base];
             val /= base;
         }
-        
+
         return i;
     }
 }
@@ -45,12 +45,12 @@ int PrintNumXY(int x, int y, long num, int mode, int color) {
 bool get_string(char* buffer, int length, int pos_x, int pos_y) {
     int start = 0;
     int cursor = 0;
-    while (buffer[++cursor]);
+    while (buffer[++cursor] && cursor < length);
 
     DisplayMBString((unsigned char*)buffer, start, cursor, pos_x, pos_y);
 
     int key;
-    while (1) {
+    while (cursor < length) {
         GetKey(&key);
 
         if (key == KEY_CTRL_EXE) {
@@ -66,5 +66,6 @@ bool get_string(char* buffer, int length, int pos_x, int pos_y) {
             EditMBStringCtrl((unsigned char*)buffer, 32, &start, &cursor, &key, pos_x, pos_y);
         }
     }
-}
 
+    return true;
+}

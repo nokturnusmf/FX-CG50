@@ -9,23 +9,23 @@ using Polynomial = Vector<Fraction>;
 
 Polynomial divide(const Polynomial& num, const Polynomial& div) {
     Polynomial result(num.size() - div.size() + 1);
-    
+
     Polynomial current(div.size());
     for (int i = 0; i < div.size(); ++i) {
         current.push_back(num[i]);
     }
-    
+
     for (int i = 0; i < num.size() - div.size() + 1; ++i) {
         Fraction mul = (current[0] / div[0]).cancel();
         result.push_back(mul);
-        
+
         for (int j = 1; j < div.size(); ++j) {
             current[j - 1] = current[j] - div[j] * mul;
         }
-        
+
         current[div.size() - 1] = num[i + div.size()];
     }
-    
+
     return result;
 }
 
@@ -41,9 +41,9 @@ void get_polynomial(Polynomial& poly, char c, int pos_x) {
     for (int i = 2;; ++i) {
         char buffer[32]; buffer[0] = c;
         memset(buffer + 1, 0, sizeof(buffer) - 1);
-        
+
         while (!get_string(buffer, 32, pos_x, 1));
-        
+
         if (buffer[0] == c) {
             return;
         } else {
@@ -69,16 +69,15 @@ int main() {
         get_polynomial(num, 'A', 1);
         get_polynomial(div, 'B', 11);
         clear();
-        
+
         auto res = divide(num, div);
         PrintNumXY(1, 1, res.size(), 0, TEXT_COLOR_PURPLE);
         for (int i = 0; i < res.size(); ++i) {
             print_fraction(1, i + 2, res[i], 0, TEXT_COLOR_BLACK);
         }
-        
+
         do {
             GetKey(&key);
         } while (key != KEY_CTRL_EXIT);
     }
 }
-
