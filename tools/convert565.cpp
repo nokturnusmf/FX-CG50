@@ -47,6 +47,7 @@ unsigned short convert(unsigned char r, unsigned char g, unsigned char b) {
 unsigned short* process(const Image& img) {
     auto result = new unsigned short[img.w * img.h];
     int k = 0;
+    #pragma omp parallel for
     for (int i = img.h - 1; i >= 0; --i) {
         for (int j = 0; j < img.w; ++j) {
             result[k++] = convert(img.pixels[3 * (i * img.w + j) + 2], img.pixels[3 * (i * img.w + j) + 1], img.pixels[3 * (i * img.w + j)]);
